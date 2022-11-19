@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const requestIp = require("request-ip");
+
 const data = [
   {
     id: 1,
@@ -86,10 +88,20 @@ const data = [
     avatar: "https://www.melivecode.com/users/12.png",
   },
 ];
-app.get("/", function (req, res) {
-  console.log(req.body);
-  console.log(req);
+
+const ipMiddleware = function (req, res, next) {
+  const clientIp = requestIp.getClientIp(req);
+  console.log("IP address", clientIp);
+  next();
+};
+
+app.get("/", ipMiddleware, function (req, res) {
+  console.log("request");
+
   res.send(data);
 });
 
-app.listen(3000);
+const port = 1122;
+app.listen(port, () => {
+  console.log(`node is running on port `, port);
+});
